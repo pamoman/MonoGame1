@@ -10,18 +10,10 @@ namespace MonoGame1
         GraphicsDeviceManager graphics;
         SpriteBatch spriteBatch;
         SpriteFont arialFont;
-        Texture2D parrotBild, zebraBild, brick;
-        Rectangle zebraRectangle;
-        Rectangle brickRectangle;
-        Rectangle brickTemp;
+        Texture2D brick;
 
-        MouseState mouse;
         KeyboardState keyboardOne = Keyboard.GetState();
         KeyboardState keyboardTwo = Keyboard.GetState();
-
-        Vector2 parrotPosition = new Vector2(100, 200);
-        Vector2 zebraPosition = new Vector2(200, 100);
-        Vector2 brickPosition = new Vector2(200, 480 - 127);
 
         int windowWidth = 800;
         int windowHeight = 480;
@@ -30,17 +22,13 @@ namespace MonoGame1
         double version = 0.1;
         Vector2 messagePosition = new Vector2(325, 0);
 
-        int left = 3;
-        int right = 3;
-        int up = 3;
-        int down = 3;
+        Rectangle brickTemp;
+        List<Rectangle> bricks = new List<Rectangle>();
 
+        int brickPos = 0;
         int brickDown = 1;
         int brickLeft = 3;
         int brickRight = 3;
-
-        List<Rectangle> bricks = new List<Rectangle>();
-        int brickPos = 0;
 
         public Game1()
         {
@@ -57,33 +45,33 @@ namespace MonoGame1
                 bricks.Add(new Rectangle((100 + (i * 70)), -100, 60, 30));
             }
 
+            FullScreen();
+
             base.Initialize();
+        }
+
+        protected void FullScreen()
+        {
+            graphics.PreferredBackBufferWidth = GraphicsAdapter.DefaultAdapter.CurrentDisplayMode.Width;
+            graphics.PreferredBackBufferHeight = GraphicsAdapter.DefaultAdapter.CurrentDisplayMode.Height;
+            graphics.IsFullScreen = true;
+
+            graphics.ApplyChanges();
+
+            windowWidth = GraphicsAdapter.DefaultAdapter.CurrentDisplayMode.Width;
+            windowHeight = GraphicsAdapter.DefaultAdapter.CurrentDisplayMode.Height;
         }
 
         protected override void LoadContent()
         {
             spriteBatch = new SpriteBatch(GraphicsDevice);
-            parrotBild = Content.Load<Texture2D>("parrot");
-            zebraBild = Content.Load<Texture2D>("zebra");
             brick = Content.Load<Texture2D>("brick_grey");
-
-            brickRectangle = new Rectangle(100, 0, 40, 20);
-            zebraRectangle = new Rectangle(100, 200, zebraBild.Width / 2, zebraBild.Height / 2);
-
             arialFont = Content.Load<SpriteFont>("arial");
         }
 
         protected override void Update(GameTime gameTime)
         {
             DropRectangle();
-
-            /*parrotPosition = FollowMouse(parrotPosition);*/
-
-            /*zebraRectangle = MakeBigger(zebraRectangle);*/
-
-            /*parrotPosition = ControlKeyboard(parrotPosition);*/
-
-            /*zebraPosition = ControlKeyboard(zebraPosition);*/
 
             base.Update(gameTime);
         }
@@ -171,98 +159,11 @@ namespace MonoGame1
             return touching;
         }
 
-        protected Vector2 FollowMouse(Vector2 position)
-        {
-            mouse = Mouse.GetState();
-            position.X = mouse.X;
-            position.Y = mouse.Y;
-
-            return position;
-        }
-
-        protected Vector2 ControlKeyboard(Vector2 position)
-        {
-            keyboardOne = Keyboard.GetState();
-
-            if (keyboardOne.IsKeyDown(Keys.Left))
-            {
-                position.X -= left;
-
-                if (position.X < 0)
-                {
-                    left = 0;
-                }
-                else
-                {
-                    left = 3;
-                }
-            }
-
-            if (keyboardOne.IsKeyDown(Keys.Right))
-            {
-                position.X += right;
-
-                if (position.X > windowWidth - parrotBild.Width)
-                {
-                    right = 0;
-                }
-                else
-                {
-                    right = 3;
-                }
-            }
-
-            if (keyboardOne.IsKeyDown(Keys.Up))
-            {
-                position.Y -= up;
-
-                if (position.Y < 0)
-                {
-                    up = 0;
-                }
-                else
-                {
-                    up = 3;
-                }
-
-            }
-
-            if (keyboardOne.IsKeyDown(Keys.Down))
-            {
-                position.Y += down;
-
-                if (position.Y > windowHeight - parrotBild.Height)
-                {
-                    down = 0;
-                }
-                else
-                {
-                    down = 3;
-                }
-            }
-
-            return position;
-        }
-
-        protected Rectangle MakeBigger(Rectangle image)
-        {
-            image.Width += 1;
-            image.Height += 1;
-
-            return image;
-        }
-
         protected override void Draw(GameTime gameTime)
         {
             GraphicsDevice.Clear(Color.DarkCyan);
 
             spriteBatch.Begin();
-            /*spriteBatch.Draw(parrotBild, parrotPosition, Color.Orange);*/
-            /*spriteBatch.Draw(zebraBild, zebraPosition, Color.Orange);*/
-            /*spriteBatch.Draw(brick, brickRectangle, Color.White);*/
-
-            /* spriteBatch.Draw(zebraBild, zebraRectangle, Color.White);*/
-
             spriteBatch.DrawString(arialFont, (message + " v" + version.ToString()), messagePosition, Color.Yellow);
 
             foreach (Rectangle b in bricks)
