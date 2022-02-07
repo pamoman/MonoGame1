@@ -26,9 +26,6 @@ namespace MonoGame1
         List<Rectangle> bricks = new List<Rectangle>();
 
         int brickPos = 0;
-        int brickDown = 1;
-        int brickLeft = 3;
-        int brickRight = 3;
 
         public Game1()
         {
@@ -76,53 +73,33 @@ namespace MonoGame1
                 Exit();
             }
 
-            DropRectangle();
+            PlayTetris(5, 10, 10);
 
             base.Update(gameTime);
         }
 
-        protected void DropRectangle()
+        protected void PlayTetris(int down, int left, int right)
         {
-            brickTemp = bricks[brickPos];
-            brickTemp.Y += brickDown;
-            
-            keyboardTwo = keyboardOne;
-            keyboardOne = Keyboard.GetState();
-
-            bool isTouching = isTouchingBrick(brickTemp);
-
             if (brickPos < bricks.Count)
             {
+                brickTemp = bricks[brickPos];
+                brickTemp.Y += down;
+
+                keyboardTwo = keyboardOne;
+                keyboardOne = Keyboard.GetState();
+
+                bool isTouching = isTouchingBrick(brickTemp);
+
                 if (!isTouching && (brickTemp.Y < windowHeight - brickTemp.Height))
                 {
-                    brickDown = 1;
-
-                    if (keyboardOne.IsKeyDown(Keys.Left))
+                    if (keyboardOne.IsKeyDown(Keys.Left) && brickTemp.X > 0)
                     {
-                        brickTemp.X -= brickLeft;
-
-                        if (brickTemp.X < 0)
-                        {
-                            brickLeft = 0;
-                        }
-                        else
-                        {
-                            brickLeft = 3;
-                        }
+                        brickTemp.X -= left;
                     }
 
-                    if (keyboardOne.IsKeyDown(Keys.Right))
+                    if (keyboardOne.IsKeyDown(Keys.Right) && brickTemp.X < windowWidth - brickTemp.Width)
                     {
-                        brickTemp.X += brickRight;
-
-                        if (brickTemp.X > windowWidth - brickTemp.Width)
-                        {
-                            brickRight = 0;
-                        }
-                        else
-                        {
-                            brickRight = 3;
-                        }
+                        brickTemp.X += right;
                     }
 
                     if ((keyboardOne.IsKeyDown(Keys.Space) && keyboardTwo.IsKeyUp(Keys.Space)))
@@ -136,13 +113,51 @@ namespace MonoGame1
 
                     bricks[brickPos] = brickTemp;
                 }
-                else if (brickPos < bricks.Count - 1)
+                else
                 {
                     brickPos++;
                 }
+            }
+        }
+
+        protected void PlayTetrisSC(int down, int left, int right)
+        {
+            if (brickPos < bricks.Count)
+            {
+                brickTemp = bricks[brickPos];
+                brickTemp.Y += down;
+
+                keyboardTwo = keyboardOne;
+                keyboardOne = Keyboard.GetState();
+
+                bool isTouching = isTouchingBrick(brickTemp);
+
+                if (!isTouching && (brickTemp.Y < windowHeight - brickTemp.Height))
+                {
+                    switch (true)
+                    {
+                        case true when (keyboardOne.IsKeyDown(Keys.Left) && brickTemp.X > 0):
+                            brickTemp.X -= left;
+                            break;
+                        case true when (keyboardOne.IsKeyDown(Keys.Right) && brickTemp.X < windowWidth - brickTemp.Width):
+                            brickTemp.X += right;
+                            break;
+                        case true when (keyboardOne.IsKeyDown(Keys.Space) && keyboardTwo.IsKeyUp(Keys.Space)):
+                            int width = brickTemp.Width;
+                            int height = brickTemp.Height;
+
+                            brickTemp.Width = height;
+                            brickTemp.Height = width;
+                            break;
+                        default:
+                            break;
+                    }
+
+                    bricks[brickPos] = brickTemp;
+                }
                 else
                 {
-                    brickDown = 0;
+                    brickPos++;
                 }
             }
         }
